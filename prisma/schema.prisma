@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  job          Jobs[]           @relation("EmployerJobs")
+  application  JobApplication[]
+  session      Session[]
+  Notification Notification[]
+  Jobs         Jobs[]
+}
+
+model Session {
+  session_id String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+}
+
+model Jobs {
+  id          String    @id @default(uuid())
+  employer_id String
+  title       String
+  description String
+  location    String
+  salary      Decimal
+  category    String
+  status      JobStatus @default(OPEN)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  employer    User             @relation("EmployerJobs", fields: [employer_id], references: [id], onDelete: Cascade)
+  application JobApplication[]
+  User        User?            @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model JobApplication {
+  id        String            @id @default(uuid())
+  job_id    String
+  user_id   String
+  resumeUrl String?
+  status    ApplicationStatus @default(PENDING)
+  appliedAt DateTime          @default(now())
+
+  job  Jobs @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  ADMIN
+  EMPLOYER
+  JOB_SEEKER
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  DRAFT
+}
