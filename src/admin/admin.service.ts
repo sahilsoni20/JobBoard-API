@@ -7,7 +7,7 @@ export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllUsers(page: number, limit: number) {
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * Number(limit);
     const users = await this.prisma.user.findMany({ skip, take: limit });
     return users
   }

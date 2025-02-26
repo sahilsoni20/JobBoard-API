@@ -21,7 +21,7 @@ export class AdminController {
 
   @Get('users')
   async getAllUsers(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.adminService.getAllUsers(page, limit);
+    return this.adminService.getAllUsers(page, Number(limit));
   }
 
   @Get('user/:id')

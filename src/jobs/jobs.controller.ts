@@ -32,7 +32,7 @@ export class JobsController {
 
   @Get()
   async getAllJobs(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.jobsService.getAllJobs(page, limit);
+    return this.jobsService.getAllJobs(page, Number(limit));
   }
 
   @Get(':id')

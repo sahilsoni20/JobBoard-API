@@ -22,11 +22,11 @@ export class JobsService {
 
   async getAllJobs(page: number = 1, limit: number = 10) {
     return await this.prisma.jobs.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
       orderBy: { createdAt: 'desc' },
     });
-  }
+  }  
 
   async getJobById(jobId: string) {
     const job = await this.prisma.jobs.findUnique({ where: { id: jobId } });
